@@ -10,3 +10,6 @@ python manage.py collectstatic --no-input
 
 # Run database migrations
 python manage.py migrate
+
+# Create superuser automatically (ignore error if already exists)
+python manage.py createsuperuser --noinput || true
