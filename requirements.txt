@@ -1,0 +1,24 @@
+Django>=5.0
+pytz
+
+# API & Docs
+djangorestframework
+drf-yasg
+
+# Admin Theme
+django-jazzmin
+
+# Real-time (WebSockets)
+channels
+channels-redis
+daphne
+
+# Database & Server (Required for Railway)
+psycopg2-binary
+dj-database-url
+gunicorn
+
+# Static Files
+whitenoise
+asgiref
+redis

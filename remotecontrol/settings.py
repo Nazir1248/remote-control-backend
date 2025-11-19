@@ -148,16 +148,137 @@
 #     },
 # }
 
-from pathlib import Path
+
+# #### Updated code 
+# from pathlib import Path
+# import os
+
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# SECRET_KEY = 'django-insecure-gljs_=-we1*=gv-1tu3plsrw^*sblelby+hbjz1^&n+9ue(=!b'
+# DEBUG = True
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2', '192.168.1.2']
+
+# INSTALLED_APPS = [
+#     'jazzmin',
+#     'django.contrib.admin',
+#     'django.contrib.auth',
+#     'django.contrib.contenttypes',
+#     'django.contrib.sessions',
+#     'django.contrib.messages',
+#     'django.contrib.staticfiles',
+#     'rest_framework',
+#     'channels',
+#     'drf_yasg',
+#     'controller',
+# ]
+
+# MIDDLEWARE = [
+#     'django.middleware.security.SecurityMiddleware',
+#     'whitenoise.middleware.WhiteNoiseMiddleware',  # <-- ADD THIS LINE
+#     'django.contrib.sessions.middleware.SessionMiddleware',
+#     'django.middleware.common.CommonMiddleware',
+#     'django.middleware.csrf.CsrfViewMiddleware',
+#     'django.contrib.auth.middleware.AuthenticationMiddleware',
+#     'django.contrib.messages.middleware.MessageMiddleware',
+#     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+# ]
+
+# ROOT_URLCONF = 'remotecontrol.urls'
+# WSGI_APPLICATION = 'remotecontrol.wsgi.application'
+# ASGI_APPLICATION = 'remotecontrol.asgi.application'
+
+# TEMPLATES = [
+#     {
+#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+#         'DIRS': [],
+#         'APP_DIRS': True,
+#         'OPTIONS': {
+#             'context_processors': [
+#                 'django.template.context_processors.request',
+#                 'django.contrib.auth.context_processors.auth',
+#                 'django.contrib.messages.context_processors.messages',
+#             ],
+#         },
+#     },
+# ]
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'remotcontroldb',
+#         'USER': 'remotcontroluser',
+#         'PASSWORD': 'nazir',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': { "hosts": [('127.0.0.1', 6379)], },
+#     },
+# }
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+#     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+#     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+#     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+# ]
+
+# LANGUAGE_CODE = 'en-us'
+# TIME_ZONE = 'Asia/Kolkata'
+# USE_I18N = True
+# USE_TZ = True
+# STATIC_URL = 'static/'
+# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# # ADD THIS LINE:
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# JAZZMIN_SETTINGS = {
+#     "site_title": "Remote Control Admin",
+#     "site_header": "Remote Control",
+#     "site_brand": "Control Panel",
+#     "welcome_sign": "Welcome to the Remote Control Admin Panel",
+#     "copyright": "Leanvia Tech Ltd",
+#     "theme": "darkly",
+#     "dark_mode_theme": "darkly",
+# }
+
+
+
+
+"""
+Django settings for remotecontrol project.
+Updated for Railway Production & Local Development.
+"""
+
 import os
+from pathlib import Path
+import dj_database_url  # Needed for Railway Database
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-gljs_=-we1*=gv-1tu3plsrw^*sblelby+hbjz1^&n+9ue(=!b'
-DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2', '192.168.1.2']
 
+# --- SECURITY CONFIGURATION ---
+# 1. SECRET_KEY: Uses environment variable on Railway, falls back to insecure key locally
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-gljs_=-we1*=gv-1tu3plsrw^*sblelby+hbjz1^&n+9ue(=!b')
+
+# 2. DEBUG: True locally, False on Railway (if RAILWAY_ENVIRONMENT variable is set)
+DEBUG = 'RAILWAY_ENVIRONMENT' not in os.environ
+
+# 3. ALLOWED_HOSTS: Allow all hosts to prevent "Invalid Host Header" errors on deployment
+ALLOWED_HOSTS = ['*']
+
+# 4. CSRF TRUST: Required for HTTPS on Railway
+CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app']
+
+# Application definition
 INSTALLED_APPS = [
-    'jazzmin',
+    'jazzmin',  # Admin Theme
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -172,7 +293,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # <-- ADD THIS LINE
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # <-- CRITICAL for Railway Static Files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -182,8 +303,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'remotecontrol.urls'
-WSGI_APPLICATION = 'remotecontrol.wsgi.application'
-ASGI_APPLICATION = 'remotecontrol.asgi.application'
 
 TEMPLATES = [
     {
@@ -200,24 +319,31 @@ TEMPLATES = [
     },
 ]
 
+WSGI_APPLICATION = 'remotecontrol.wsgi.application'
+ASGI_APPLICATION = 'remotecontrol.asgi.application'
+
+# --- DATABASE CONFIGURATION ---
+# Automatically switches between Railway (PostgreSQL) and Localhost
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'remotcontroldb',
-        'USER': 'remotcontroluser',
-        'PASSWORD': 'nazir',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        # Local fallback (your original local settings)
+        default='postgres://remotcontroluser:nazir@localhost:5432/remotcontroldb',
+        conn_max_age=600
+    )
 }
 
+# --- CHANNEL LAYERS (REDIS) ---
+# Automatically switches between Railway Redis and Local Redis
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': { "hosts": [('127.0.0.1', 6379)], },
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')],
+        },
     },
 }
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -225,17 +351,22 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
+
+# --- STATIC FILES CONFIGURATION ---
 STATIC_URL = 'static/'
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# ADD THIS LINE:
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Whitenoise storage ensures static files (admin CSS) work on Railway
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- JAZZMIN SETTINGS ---
 JAZZMIN_SETTINGS = {
     "site_title": "Remote Control Admin",
     "site_header": "Remote Control",
