@@ -274,7 +274,10 @@ DEBUG = 'RAILWAY_ENVIRONMENT' not in os.environ
 ALLOWED_HOSTS = ['*']
 
 # 4. CSRF TRUST: Required for HTTPS on Railway
-CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app']
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.up.railway.app',
+    'https://*.onrender.com',
+]
 
 # Application definition
 INSTALLED_APPS = [
